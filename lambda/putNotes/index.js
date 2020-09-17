@@ -1,22 +1,36 @@
 const AWS = require("aws-sdk");
 
-exports.handler = function (event, context, callback) {
+exports.handler = async (event, context) => {
     const docClient = new AWS.DynamoDB.DocumentClient();
+    let responseBody = "";
+    let statusCode = 0;
+    const { id, title, content} = JSON.parse(event.body);
     const params = {
-    TableName: "noteTable",
+      TableName: "noteTable",
       Item: {
-	id: 200,
-	title: "Lambda Note Title",
-	content: "Lambda note content"
+	id: id,
+	title: title,
+	content: content
       }
     }
 
-    console.log("Adding a new item...");
-    docClient.put(params, function(err, data) {
-      if (err) {
-        console.error("Unable to add item. Error JSON:", JSON.stringify(err, null, 2));
-      } else {
-        console.log("Added item:", JSON.stringify(data, null, 2));
-      }
-    });
+    try {
+      const data = await docClient.put(params).promise();
+      responseBody = JSON.stringify(data);
+      statusCode = 201;
+    } catch (err) {
+      responseBody = "Unable to put note data";
+      statusCode = 403;
+    }
+    
+    const response = {
+      statusCode: statusCode,
+      headers: {
+	"myHeader": "test"
+      },
+      body: responseBody
+    }
+    
+    return response;
+   
 }
