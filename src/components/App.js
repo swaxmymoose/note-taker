@@ -4,10 +4,26 @@ import Footer from './Footer';
 import Note from './Note';
 import notes from '../notes';
 import CreateArea from './CreateArea';
+import axios from 'axios';
+
 
 function App() {
 
-  const [notes, setNotes] = useState([]);
+  var [notes, setNotes] = useState([]);
+
+  // Call load notes on render
+  React.useEffect(() => {
+    loadNotes();
+  }, []);
+
+  // Retreive note data from api then set notes variable  
+  function loadNotes() {
+      axios.get('https://u4fqzfwd0c.execute-api.us-east-1.amazonaws.com/prod/note').then(
+        res =>{ const reply = res.data;
+            setNotes(reply);
+        }
+    );
+  }
 
   function addNote(newNote) {
     setNotes(prevNotes => {
