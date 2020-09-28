@@ -21,7 +21,8 @@ exports.handler = async (event, context) => {
     const response = {
         statusCode: statusCode,
         headers: {
-            "myHeader": "test"
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin" : "*"
         },
         body: responseBody
     }
